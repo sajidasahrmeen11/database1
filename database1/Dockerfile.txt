@@ -15,7 +15,7 @@ COPY . .
 RUN dotnet publish "database1.csproj" -c Release -o /app/out /p:RestoreFallbackFolders=""
 
 # Runtime Stage (Linux based .NET 8 Runtime)
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
+FROM mcr.microsoft.com/dotnet/aspnet:7.0
 WORKDIR /app
 COPY --from=build /app/out .
 
