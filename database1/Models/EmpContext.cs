@@ -19,8 +19,7 @@ public partial class EmpContext : DbContext
 
     public virtual DbSet<Role> Roles { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) { }
-       //=> optionsBuilder.UseSqlServer("data source=.;initial catalog=emp;user id=sa;password=aptech; TrustServerCertificate=True");
+    // ❌ OnConfiguring REMOVE kar diya (IMPORTANT)
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -33,15 +32,20 @@ public partial class EmpContext : DbContext
             entity.Property(e => e.Email)
                 .HasMaxLength(50)
                 .HasColumnName("email");
+
             entity.Property(e => e.Password)
                 .HasMaxLength(250)
                 .HasColumnName("password");
-            entity.Property(e => e.Roleid).HasColumnName("roleid");
+
+            entity.Property(e => e.Roleid)
+                .HasColumnName("roleid");
+
             entity.Property(e => e.Username)
                 .HasMaxLength(250)
                 .HasColumnName("username");
 
-            entity.HasOne(d => d.Role).WithMany(p => p.Logins)
+            entity.HasOne(d => d.Role)
+                .WithMany(p => p.Logins)
                 .HasForeignKey(d => d.Roleid)
                 .HasConstraintName("FK_login_ToTable");
         });
