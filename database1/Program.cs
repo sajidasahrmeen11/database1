@@ -8,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<EmpContext>(options =>
-   options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+   options.UseNpgsql(builder.Configuration.GetConnectionString("Host=junction.proxy.rlwy.net;Port=27090;Database=railway;Username=postgres;Password=UaIsReuAjJirbhglZgcTCXmnysUoUtzV;SSL Mode=Require;Trust Server Certificate=true;")));
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(
               op =>
               {
