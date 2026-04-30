@@ -1,9 +1,13 @@
+using database1.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddDbContext<EmpContext>(options =>
+   options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(
               op =>
               {
@@ -28,8 +32,27 @@ app.UseAuthentication();
 app.UseRouting();
 app.UseAuthorization();
 
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<EmpContext>();
+        context.Database.Migrate();
+        Console.WriteLine("Database Migration Successful!");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("Migration Error: " + ex.Message);
+    }
+}
+
 
 app.Run();
