@@ -1,59 +1,75 @@
-using database1.Models;
+﻿using database1.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Add services
 builder.Services.AddControllersWithViews();
 
+// 🔥 Railway DATABASE_URL handling
+var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+
+string connectionString;
+
+if (!string.IsNullOrEmpty(databaseUrl))
+{
+    var uri = new Uri(databaseUrl);
+    var userInfo = uri.UserInfo.Split(':');
+
+    connectionString =
+        $"Host={uri.Host};" +
+        $"Port={uri.Port};" +
+        $"Database={uri.AbsolutePath.TrimStart('/')};" +
+        $"Username={userInfo[0]};" +
+        $"Password={userInfo[1]};" +
+        $"SSL Mode=Require;Trust Server Certificate=true;";
+}
+else
+{
+    connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+}
+
+// ✅ DbContext
 builder.Services.AddDbContext<EmpContext>(options =>
-   options.UseNpgsql(builder.Configuration.GetConnectionString("Host=junction.proxy.rlwy.net;Port=27090;Database=railway;Username=postgres;Password=UaIsReuAjJirbhglZgcTCXmnysUoUtzV;SSL Mode=Require;Trust Server Certificate=true;")));
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(
-              op =>
-              {
-                  op.LoginPath = "/cookies/Login";
-                  op.AccessDeniedPath = "/cookies/Login";
-                  op.ExpireTimeSpan = TimeSpan.FromMinutes(60);
-              }
-              );
+    options.UseNpgsql(connectionString));
+
+// ✅ Authentication
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(op =>
+    {
+        op.LoginPath = "/cookies/Login";
+        op.AccessDeniedPath = "/cookies/Login";
+        op.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+    });
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Middleware
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-app.UseAuthentication();
+
 app.UseRouting();
+
+app.UseAuthentication();
 app.UseAuthorization();
 
-
+// Routing
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-
-
+// ✅ Auto Migration (VERY IMPORTANT for Railway)
 using (var scope = app.Services.CreateScope())
 {
-    var services = scope.ServiceProvider;
-    try
-    {
-        var context = services.GetRequiredService<EmpContext>();
-        context.Database.Migrate();
-        Console.WriteLine("Database Migration Successful!");
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine("Migration Error: " + ex.Message);
-    }
+    var db = scope.ServiceProvider.GetRequiredService<EmpContext>();
+    db.Database.Migrate();
 }
-
 
 app.Run();
