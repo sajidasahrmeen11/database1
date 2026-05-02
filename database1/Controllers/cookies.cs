@@ -12,7 +12,13 @@ namespace database1.Controllers
 {
     public class cookies : Controller
     {
-        EmpContext db = new EmpContext();
+
+        private readonly EmpContext db;
+
+        public cookies(EmpContext context)
+        {
+            db = context;
+        }
 
         public IActionResult Index()
         {
