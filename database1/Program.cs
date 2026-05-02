@@ -30,9 +30,10 @@ else
     connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 }
 
-// ✅ DbContext
+// ✅ DbContext (🔥 FIX ADDED HERE)
 builder.Services.AddDbContext<EmpContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseNpgsql(connectionString)
+           .UseSnakeCaseNamingConvention());
 
 // ✅ Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

@@ -26,7 +26,8 @@ namespace database1.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
@@ -50,9 +51,10 @@ namespace database1.Migrations
                         .HasColumnName("username");
 
                     b.HasKey("Id")
-                        .HasName("PK__login__3214EC07CE89C6DF");
+                        .HasName("pk_login");
 
-                    b.HasIndex("Roleid");
+                    b.HasIndex("Roleid")
+                        .HasDatabaseName("ix_login_roleid");
 
                     b.ToTable("login", (string)null);
                 });
@@ -61,7 +63,8 @@ namespace database1.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
@@ -71,7 +74,7 @@ namespace database1.Migrations
                         .HasColumnName("rname");
 
                     b.HasKey("Id")
-                        .HasName("PK__Role__3214EC07AF0DBE76");
+                        .HasName("pk_role");
 
                     b.ToTable("Role", (string)null);
                 });
@@ -81,7 +84,7 @@ namespace database1.Migrations
                     b.HasOne("database1.Models.Role", "Role")
                         .WithMany("Logins")
                         .HasForeignKey("Roleid")
-                        .HasConstraintName("FK_login_ToTable");
+                        .HasConstraintName("fk_login_roles_roleid");
 
                     b.Navigation("Role");
                 });

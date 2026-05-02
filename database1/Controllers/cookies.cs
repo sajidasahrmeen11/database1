@@ -28,7 +28,7 @@ namespace database1.Controllers
         [HttpGet]
         public IActionResult Adduser()
         {
-            ViewBag.Roleid = new SelectList(db.Roles, "Id", "Rname");
+            ViewBag.Roleid = new SelectList(db.Roles, "Id", "rname");
             return View();
         }
         [HttpPost]

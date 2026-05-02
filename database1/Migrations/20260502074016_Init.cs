@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace database1.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,20 +15,20 @@ namespace database1.Migrations
                 name: "Role",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
+                    id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     rname = table.Column<string>(type: "character varying(250)", maxLength: 250, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Role__3214EC07AF0DBE76", x => x.Id);
+                    table.PrimaryKey("pk_role", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "login",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
+                    id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     username = table.Column<string>(type: "character varying(250)", maxLength: 250, nullable: true),
                     password = table.Column<string>(type: "character varying(250)", maxLength: 250, nullable: true),
@@ -37,16 +37,16 @@ namespace database1.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__login__3214EC07CE89C6DF", x => x.Id);
+                    table.PrimaryKey("pk_login", x => x.id);
                     table.ForeignKey(
-                        name: "FK_login_ToTable",
+                        name: "fk_login_roles_roleid",
                         column: x => x.roleid,
                         principalTable: "Role",
-                        principalColumn: "Id");
+                        principalColumn: "id");
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_login_roleid",
+                name: "ix_login_roleid",
                 table: "login",
                 column: "roleid");
         }
